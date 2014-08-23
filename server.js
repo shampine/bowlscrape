@@ -13,9 +13,20 @@ app.get('/scrape', function(req, res){
     if(!error) {
 
       var $= cheerio.load(html);
-      var title, year, rating, rank, url;
-      var json = { title : "", year : "", rating : "", rank : "", url : ""};
+      var title, year, rating, description, url;
+      var json = { title : "", year : "", rating : "", description : "", url : ""};
 
+
+      $('.list_item').filter(function(){
+        var data = $(this);
+
+        title = data.find('b a').text();
+        year = data.find('b span').text();
+        rating = data.find('.rating-rating .value').text();
+        description = data.find('.item_description').text();
+        url = data.find('b a').attr('href');
+
+      })
     }
   })
 

@@ -6,44 +6,65 @@ var app = express();
 
 app.get('/scrape', function(req, res){
 
-  url = 'http://www.imdb.com/list/ls052535080/?start=1&view=detail&sort=listorian:asc';
+  var url = [
+    'http://www.imdb.com/list/ls052535080/?start=1&view=detail&sort=listorian:asc',
+    'http://www.imdb.com/list/ls052535080/?start=101&view=detail&sort=listorian:asc',
+    'http://www.imdb.com/list/ls052535080/?start=201&view=detail&sort=listorian:asc',
+    'http://www.imdb.com/list/ls052535080/?start=301&view=detail&sort=listorian:asc',
+    'http://www.imdb.com/list/ls052535080/?start=401&view=detail&sort=listorian:asc',
+    'http://www.imdb.com/list/ls052535080/?start=501&view=detail&sort=listorian:asc',
+    'http://www.imdb.com/list/ls052535080/?start=601&view=detail&sort=listorian:asc',
+    'http://www.imdb.com/list/ls052535080/?start=701&view=detail&sort=listorian:asc',
+    'http://www.imdb.com/list/ls052535080/?start=801&view=detail&sort=listorian:asc',
+    'http://www.imdb.com/list/ls052535080/?start=901&view=detail&sort=listorian:asc',
+    'http://www.imdb.com/list/ls052535080/?start=1001&view=detail&sort=listorian:asc'
+  ];
 
-  request(url, function(error, response, html){
+  var list = [];
 
-    if(!error) {
+  for(var i=0; i < url.length; i++) {
 
-      var $ = cheerio.load(html);
-      var list = [];
+    request(url[i], function(error, response, html) {
 
-      $('.list_item').each(function(index) {
+      if(!error) {
 
-        var data = $(this);
-        var title, year, rating, description, url;
-        var json = {};
+        var $ = cheerio.load(html);
 
-        title = data.find('b a').text();
-        year = data.find('b span').text();
-        rating = data.find('.rating-rating .value').text();
-        description = data.find('.item_description').text();
-        url = data.find('b a').attr('href');
+        $('.list_item').each(function(index) {
 
-        json.title = title;
-        json.year = year;
-        json.rating = rating;
-        json.description = description;
-        json.url = url;
+          var data = $(this);
+          var title, year, rating, description, url;
+          var json = {};
 
-        console.log(json);
-        list.push(json);
+          title = data.find('b a').text();
+          year = data.find('b span').text();
+          rating = data.find('.rating-rating .value').text();
+          description = data.find('.item_description').text();
+          url = data.find('b a').attr('href');
 
-      })
-    }
+          json.title = title;
+          json.year = year;
+          json.rating = rating;
+          json.description = description;
+          json.url = url;
+ 
+          list.push(json);
 
-    console.log(list);
+        });
 
-  })
+      }
 
-})
+      fs.writeFile('list.json', JSON.stringify(list, null, 4), function(err){
+
+        console.log('Succesfully wrote to file, see list.json.');
+
+      });
+
+    });
+
+  }
+
+});
 
 app.listen('8081')
 

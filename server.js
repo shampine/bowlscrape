@@ -34,13 +34,19 @@ app.get('/scrape', function(req, res){
 
           var data = $(this);
           var title, year, rating, description, url;
-          var json = {
-            title       : data.find('b a').text();
-            year        : data.find('b span').text();
-            rating      : data.find('.rating-rating .value').text();
-            description : data.find('.item_description').text();
-            url         : data.find('b a').attr('href');
-          };
+          var json = {};
+
+          title = data.find('b a').text();
+          year = data.find('b span').text();
+          rating = data.find('.rating-rating .value').text();
+          description = data.find('.item_description').text();
+          url = data.find('b a').attr('href');
+
+          json.title = title;
+          json.year = year;
+          json.rating = rating;
+          json.description = description;
+          json.url = url;
  
           list.push(json);
 
@@ -48,21 +54,14 @@ app.get('/scrape', function(req, res){
 
       }
 
+      fs.writeFile('list.json', JSON.stringify(list, null, 4), function(err){
+
+        console.log('Succesfully wrote to file, see list.json.');
+
+      });
+
     });
 
-  }
-  
-  if (list.length) {
-
-    fs.writeFile('list.json', JSON.stringify(list, null, 4), function(err){
-  
-      console.log('Succesfully wrote to file, see list.json.');
-  
-    });
-  
-  } else {
-    
-    console.log('Absolutely zero results successfully scraped!?');
   }
 
 });
